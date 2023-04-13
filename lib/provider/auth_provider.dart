@@ -15,7 +15,6 @@ class AppAuthProvider {
 
   static Future<bool> getLoginStatus() async {
     bool loggedIn;
-    // await AppAuthProvider.getCurrentUser().then((value) => print('try $value'));
     if (await AppAuthProvider.getCurrentUser() == null ||
         await AppAuthProvider.getCurrentUser() == '') {
       loggedIn = false;
