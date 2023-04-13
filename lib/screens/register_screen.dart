@@ -12,11 +12,10 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-
-  final TextEditingController  _nameController = TextEditingController();
-  final TextEditingController  _emailController = TextEditingController();
-  final TextEditingController  _phoneController = TextEditingController();
-  final TextEditingController  _locationController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
 
   @override
   void dispose() {
@@ -28,156 +27,159 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(245, 203, 66, 1.0),
       appBar: AppBar(
-        title: const Text("Kheti Go - Fleet Registration"), backgroundColor: Colors.lightGreen,
+        title: const Text("Kheti Go - Fleet Registration"),
+        backgroundColor: Colors.lightGreen,
       ),
       body: SafeArea(
-        child: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/backgroundImage.png"),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 50, 20, 0),
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                      icon: const Icon(Icons.person),
-                      hintText: 'Enter name of your brand',
-                      labelText: 'Name',
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25.0),
-                        borderSide: const BorderSide(
-                          color: Colors.blue,
+        child: SingleChildScrollView(
+          child: Container(
+            child: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 50, 20, 0),
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        icon: const Icon(Icons.person),
+                        hintText: 'Enter name of your brand',
+                        labelText: 'Name',
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: const BorderSide(
+                            color: Colors.blue,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                            width: 2.0,
+                          ),
                         ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25.0),
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                          width: 2.0,
-                        ),
-                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
                     ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 50,),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      icon: const Icon(Icons.email),
-                      hintText: 'Enter your email',
-                      labelText: 'Email ID',
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25.0),
-                        borderSide: const BorderSide(
-                          color: Colors.blue,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25.0),
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                          width: 2.0,
-                        ),
-                      ),
+                    const SizedBox(
+                      height: 50,
                     ),
-                    validator: (value) {
-                      if (!value!.contains('@')) {
-                        return 'Please valid email Id';
-                      }
-                      return null;
-                    },
-                  ),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        icon: const Icon(Icons.email),
+                        hintText: 'Enter your email',
+                        labelText: 'Email ID',
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: const BorderSide(
+                            color: Colors.blue,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                            width: 2.0,
+                          ),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (!value!.contains('@')) {
+                          return 'Please valid email Id';
+                        }
+                        return null;
+                      },
+                    ),
 
-              const SizedBox(height: 50,),
-              TextFormField(
-                controller: _phoneController,
-                decoration:  InputDecoration(
-                  icon: const Icon(Icons.phone),
-                  hintText: 'Enter your phone number',
-                  labelText: 'Phone Number',
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25.0),
-                    borderSide: const BorderSide(
-                      color: Colors.blue,
+                    const SizedBox(
+                      height: 50,
                     ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25.0),
-                    borderSide: const BorderSide(
-                      color: Colors.red,
-                      width: 2.0,
+                    TextFormField(
+                      controller: _phoneController,
+                      decoration: InputDecoration(
+                        icon: const Icon(Icons.phone),
+                        hintText: 'Enter your phone number',
+                        labelText: 'Phone Number',
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: const BorderSide(
+                            color: Colors.blue,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                            width: 2.0,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+
+                    const SizedBox(
+                      height: 50,
+                    ),
+                    TextFormField(
+                      controller: _locationController,
+                      decoration: InputDecoration(
+                        icon: const Icon(Icons.location_on),
+                        hintText: 'Enter location of the station',
+                        labelText: 'Location',
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: const BorderSide(
+                            color: Colors.blue,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                            width: 2.0,
+                          ),
+                        ),
+                      ),
+                      keyboardType: TextInputType.text,
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Please enter a valid location';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 50,
+                    ),
+                    // CloseButton(color: Colors.red, onPressed: exit(0),)
+                    CustomButton(
+                      text: 'Register',
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          FleetAdmin fa = FleetAdmin(
+                              name: _nameController.text,
+                              emailID: _emailController.text,
+                              location: _locationController.text,
+                              phoneNumber: FirebaseAuth
+                                  .instance.currentUser?.phoneNumber);
+                          await HandleUserData.createNewUser(fa.toJson());
+                          gotoNextScreen(HomeScreen(), context);
+                        }
+                      },
+                    )
+                  ],
                 ),
-              ),
-
-
-                const SizedBox(height: 50,),
-                  TextFormField(
-                    controller: _locationController,
-                    decoration:  InputDecoration(
-                      icon: const Icon(Icons.location_on),
-                      hintText: 'Enter location of the station',
-                      labelText: 'Location',
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25.0),
-                        borderSide: const BorderSide(
-                          color: Colors.blue,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25.0),
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                          width: 2.0,
-                        ),
-                      ),
-                    ),
-
-                    keyboardType: TextInputType.text,
-                    validator: (value) {
-                      if (value==null) {
-                        return 'Please enter a valid location';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 50,),
-                  // CloseButton(color: Colors.red, onPressed: exit(0),)
-                  CustomButton(
-                    text: 'Register',
-                    onPressed:()async{
-                      if (_formKey.currentState!.validate()) {
-                        FleetAdmin fa = FleetAdmin(
-                            name:_nameController.text,
-                            emailID: _emailController.text,
-                            location: _locationController.text,
-                            phoneNumber: FirebaseAuth.instance.currentUser?.phoneNumber
-                        );
-                        await HandleUserData.createNewUser(fa.toJson());
-                        gotoNextScreen(HomeScreen(), context);
-                      }
-                    },
-                  )
-                ],
               ),
             ),
           ),
