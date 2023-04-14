@@ -115,7 +115,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                   .phoneNumber)) {
                                 if (!mounted) return;
                                 Navigator.of(context).pop();
-                                gotoNextScreen(const RegisterScreen(), context);
+                                gotoNextScreen( RegisterScreen(), context);
                               } else {
                                 if (!mounted) return;
                                 Navigator.of(context).pop();
