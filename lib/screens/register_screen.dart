@@ -1,12 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import '../widgets/custom_widgets.dart';
 import 'package:kheti_go_fleet/firebase_operation/handle_user_data.dart';
 import 'package:kheti_go_fleet/models/fleetadmin.dart';
 import 'package:kheti_go_fleet/screens/home_screen.dart';
-
+import 'package:geolocator/geolocator.dart';
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  RegisterScreen({Key? key}) : super(key: key);
+
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
@@ -26,6 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     super.dispose();
   }
+
 
   final _formKey = GlobalKey<FormState>();
   @override
@@ -131,34 +135,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(
                       height: 50,
                     ),
-                    TextFormField(
-                      controller: _locationController,
-                      decoration: InputDecoration(
-                        icon: const Icon(Icons.location_on),
-                        hintText: 'Enter location of the station',
-                        labelText: 'Location',
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25.0),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25.0),
-                          borderSide: const BorderSide(
-                            color: Colors.red,
-                            width: 2.0,
-                          ),
-                        ),
-                      ),
-                      keyboardType: TextInputType.text,
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Please enter a valid location';
-                        }
-                        return null;
+                    ElevatedButton(
+                      onPressed: ()async{
+                       await getLatLong();
+                       storeLocationInFirebase();
                       },
-                    ),
+                      child: const Text("Get Location"),
+                      style: ElevatedButton.styleFrom(
+                       ),),
                     const SizedBox(
                       height: 50,
                     ),
@@ -185,6 +169,85 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
       ),
+
+
     );
   }
+  double? lat;
+
+  double? long;
+
+  String address = "";
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+  }
+  getLatLong() {
+    Future<Position> data = _determinePosition();
+    data.then((value) {
+      print("value $value");
+      setState(() {
+        lat = value.latitude;
+        long = value.longitude;
+      });
+
+      getAddress(value.latitude, value.longitude);
+    }).catchError((error) {
+      print("Error $error");
+    });
+  }
+  getAddress(lat, long) async {
+    List<Placemark> placemarks = await placemarkFromCoordinates(lat, long);
+    setState(() {
+      address = placemarks[0].street! + " " + placemarks[0].country!;
+    });
+
+    for (int i = 0; i < placemarks.length; i++) {
+      print("INDEX $i ${placemarks[i]}");
+    }
+  }
+  storeLocationInFirebase(){
+    GeoPoint geoPoint=GeoPoint(lat! ,  long!);
+    final  Map<String,dynamic > data={
+      'location': geoPoint
+    };
+    FirebaseFirestore.instance.collection('FleetLoaction').doc(FirebaseAuth.instance.currentUser?.uid).set(data);
+
+  }
+
 }
+

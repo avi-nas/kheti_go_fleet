@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:kheti_go_fleet/screens/login_screen.dart';
 import 'package:kheti_go_fleet/provider/auth_provider.dart';
 import 'package:kheti_go_fleet/screens/home_screen.dart';
+import 'package:kheti_go_fleet/screens/register_screen.dart';
 
 
 Future main() async {
@@ -16,6 +17,6 @@ Future main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: loggedIn?const HomeScreen():const LoginScreen(),
+    home: loggedIn?const HomeScreen(): LoginScreen(),
   ),);
 }

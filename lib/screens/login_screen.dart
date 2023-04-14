@@ -136,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 '+${selectedCountry.phoneCode}${phoneController.text.trim()}',
                             verificationCompleted:
                                 (PhoneAuthCredential credential) {},
-                            verificationFailed: (FirebaseAuthException e) {},
+                            verificationFailed: (FirebaseAuthException e) {print('verification fail due to $e' );},
                             codeSent:
                                 (String verificationId, int? resendToken) {
                               print(verificationId);
