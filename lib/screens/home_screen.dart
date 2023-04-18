@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Position userPosition;
+  late final Position? userPosition;
   @override
   void initState() {
     // TODO: implement initState
@@ -119,15 +119,27 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return RequestInfo(
-                                  userPosition: userPosition,
-                                  farmerRequest: farmerRequest,
-                                );
-                              },
-                            );
+                            if(userPosition == null){
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return CircularProgressIndicator(
+                                    backgroundColor: Colors.black,
+                                  );
+                                },
+                              );
+                            }else{
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return RequestInfo(
+                                    userPosition: userPosition!,
+                                    farmerRequest: farmerRequest,
+                                  );
+                                },
+                              );
+                            }
+
                           },
                           child: const Text('View'),
                         ),
@@ -154,9 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   }
 
-  tryMe(FarmerRequest farmerRequest) {
-    print('${farmerRequest.requestAccepted}');
-  }
+
 
   Stream readRequest() => FirebaseFirestore.instance
       .collection('FleetAllocationRequest')
@@ -175,13 +185,14 @@ class _HomeScreenState extends State<HomeScreen> {
       print(error);
     });
     userPosition = await Geolocator.getCurrentPosition();
-    print(userPosition.latitude);
+    print(userPosition!.latitude);
     storeLocationInFirebase();
+    setState(() {
+    });
   }
 
-
   storeLocationInFirebase()async{
-    GeoPoint geoPoint =  GeoPoint(userPosition.latitude, userPosition.longitude);
+    GeoPoint geoPoint =  GeoPoint(userPosition!.latitude, userPosition!.longitude);
     final Map<String, dynamic> data = {
       'location': geoPoint
     };

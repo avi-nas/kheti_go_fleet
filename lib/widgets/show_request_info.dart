@@ -1,8 +1,9 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_map_polyline_new/google_map_polyline_new.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:kheti_go_fleet/staticData.dart';
 
 import '../models/farmer_request.dart';
 
@@ -16,20 +17,18 @@ class RequestInfo extends StatefulWidget {
 }
 
 class _RequestInfoState extends State<RequestInfo> {
-  List<LatLng> polylineCoordinates = [];
-  Map<PolylineId, Polyline> polylines = {};
-  PolylinePoints polylinePoints = PolylinePoints();
 
 
+
+  List<LatLng>? routeCoords =[];
+  GoogleMapPolyline googleMapPolyline = GoogleMapPolyline(apiKey:  apiKey);
+  final Set<Polyline> poly ={};
   @override
   void initState() {
     // TODO: implement initState
-    _getPolyline();
+    getPoint();
     super.initState();
-
   }
-
-
   @override
   Widget build(BuildContext context) {
     final CameraPosition _cameraPosition =  CameraPosition(
@@ -40,89 +39,53 @@ class _RequestInfoState extends State<RequestInfo> {
       Marker(
         markerId: const MarkerId('1'),
         position: LatLng(widget.farmerRequest.location!.latitude, widget.farmerRequest.location!.longitude),
+          icon:  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
       ),
       Marker(
         markerId: const MarkerId('2'),
         position: LatLng(widget.userPosition.latitude, widget.userPosition.longitude),
       ),
-
     ];
-    print(polylineCoordinates);
     return Padding(padding: const EdgeInsets.fromLTRB(40, 80, 40, 120),
     child: Card(
       color: Colors.green[100],
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
       ),
-      child: Stack(
+      child: routeCoords!.isEmpty?const Center(child: CircularProgressIndicator()) : Stack(
         children: [
           GoogleMap(
             onMapCreated: (GoogleMapController controler)async{
-              await _getPolyline();
+              poly.add(
+                Polyline(
+                    polylineId: const PolylineId('route1'),
+                  visible: true,
+                  points: routeCoords!,
+                  width: 4,
+                  color: Colors.blue,
+                  startCap: Cap.roundCap,
+                  endCap: Cap.buttCap,
+                )
+              );
+              setState(() {
+              });
             },
-            polylines: Set<Polyline>.of(polylines.values),
-
+            polylines: poly,
             initialCameraPosition: _cameraPosition,
             markers: _marker.toSet(),
-
           ),
         ],
       )
     ),
     );
   }
-
-  void getPolyPoint()async{
-    PolylinePoints polylinePoints = PolylinePoints();
-    PolylineResult result =await polylinePoints.getRouteBetweenCoordinates(
-        'AIzaSyC7XOjSB_qJ-ZG5WWhX1ZCNCvCqqF3mQzQ',
-        PointLatLng(widget.userPosition.latitude, widget.userPosition.longitude),
-        PointLatLng(widget.farmerRequest.location!.latitude, widget.farmerRequest.location!.longitude)
-    );
-    if(result.points.isNotEmpty){
-      result.points.forEach(
-              (PointLatLng point)=>polylineCoordinates.add(
-                  LatLng(point.latitude, point.longitude),
-              ),
-      );
-      print('hi');
-      print('result points = ${result.points.length}');
-      print('hi');
-      setState(() {
-
-      });
-    }
-  }
-
-
-  _addPolyLine() {
-    PolylineId id = PolylineId("poly");
-    Polyline polyline = Polyline(
-        polylineId: id, color: Colors.red, points: polylineCoordinates);
-    polylines[id] = polyline;
-    setState(() {});
-  }
-
-  _getPolyline() async {
-    PolylineResult result =await polylinePoints.getRouteBetweenCoordinates(
-        'AIzaSyC7XOjSB_qJ-ZG5WWhX1ZCNCvCqqF3mQzQ',
-        PointLatLng(widget.userPosition.latitude, widget.userPosition.longitude),
-        PointLatLng(widget.farmerRequest.location!.latitude, widget.farmerRequest.location!.longitude),
-      travelMode: TravelMode.driving
-    ).whenComplete((){
-      print('done');
-      setState(() {
-      });
+  getPoint()async{
+    routeCoords= await googleMapPolyline.getCoordinatesWithLocation(
+        origin: LatLng(widget.userPosition.latitude, widget.userPosition.longitude),
+        destination: LatLng(widget.farmerRequest.location!.latitude, widget.farmerRequest.location!.longitude),
+        mode:  RouteMode.driving).whenComplete((){
+          setState(() {
+          });
     });
-    print('len ${result.points.length}');
-
-    if (result.points.isNotEmpty) {
-      print('got data');
-      result.points.forEach((PointLatLng point) {
-        print('Lat = ${point.latitude} lon = ${point.longitude}');
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
-    }
-    _addPolyLine();
   }
 }
