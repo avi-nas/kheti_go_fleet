@@ -49,13 +49,10 @@ dependencies:
   geolocator: ^9.0.2
   geocoding: ^2.1.0
   google_maps_flutter: ^2.2.5
-  flutter_polyline_points: ^1.0.0
   google_map_polyline_new: ^0.3.0+2
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
