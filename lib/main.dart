@@ -13,10 +13,12 @@ Future main() async {
   await Firebase.initializeApp();
   bool loggedIn = await AppAuthProvider.getLoginStatus();
   print('Current user = ${FirebaseAuth.instance.currentUser?.uid}');
-
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
+    theme: ThemeData(
+      primarySwatch: Colors.lightGreen,
+    ),
     home: loggedIn?const HomeScreen(): LoginScreen(),
   ),);
 }

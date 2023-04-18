@@ -7,6 +7,8 @@
         android:label="KhetiGo-Fleet"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+       <meta-data android:name="com.google.android.geo.API_KEY"
+           android:value="AIzaSyC7XOjSB_qJ-ZG5WWhX1ZCNCvCqqF3mQzQ"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
