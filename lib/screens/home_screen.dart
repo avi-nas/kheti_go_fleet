@@ -167,13 +167,9 @@ class _HomeScreenState extends State<HomeScreen> {
     await Geolocator.requestPermission().then((value){}).onError((error, stackTrace){
       print(error);
     });
-    // userPosition = await Geolocator.getCurrentPosition(
-    //   desiredAccuracy: LocationAccuracy.bestForNavigation,
-    // );
     try {
       userPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
     } catch(e) {
-
       userPosition = await Geolocator.getLastKnownPosition();
     }
     print(userPosition!.latitude);
