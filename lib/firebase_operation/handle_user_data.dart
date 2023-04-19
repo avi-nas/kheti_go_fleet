@@ -17,6 +17,7 @@ class HandleUserData{
     });
     return isNew;
   }
+
   static Future<void> createNewUser(var json)async {
     firebaseFirestore.collection('FleetAdmin').doc(firebaseAuthInstance.currentUser?.uid).set(json);
   }

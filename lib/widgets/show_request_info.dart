@@ -11,22 +11,18 @@ class RequestInfo extends StatefulWidget {
   FarmerRequest farmerRequest;
   Position userPosition;
   RequestInfo({Key? key,required this.farmerRequest,required this.userPosition}) : super(key: key);
-
   @override
   State<RequestInfo> createState() => _RequestInfoState();
 }
 
 class _RequestInfoState extends State<RequestInfo> {
-
-
-
   List<LatLng>? routeCoords =[];
   GoogleMapPolyline googleMapPolyline = GoogleMapPolyline(apiKey:  apiKey);
-  final Set<Polyline> poly ={};
+  final Set<Polyline> polylines ={};
   @override
   void initState() {
     // TODO: implement initState
-    getPoint();
+    getLinePoints();
     super.initState();
   }
   @override
@@ -56,7 +52,7 @@ class _RequestInfoState extends State<RequestInfo> {
         children: [
           GoogleMap(
             onMapCreated: (GoogleMapController controler)async{
-              poly.add(
+              polylines.add(
                 Polyline(
                     polylineId: const PolylineId('route1'),
                   visible: true,
@@ -70,7 +66,7 @@ class _RequestInfoState extends State<RequestInfo> {
               setState(() {
               });
             },
-            polylines: poly,
+            polylines: polylines,
             initialCameraPosition: _cameraPosition,
             markers: _marker.toSet(),
           ),
@@ -79,7 +75,7 @@ class _RequestInfoState extends State<RequestInfo> {
     ),
     );
   }
-  getPoint()async{
+  getLinePoints()async{
     routeCoords= await googleMapPolyline.getCoordinatesWithLocation(
         origin: LatLng(widget.userPosition.latitude, widget.userPosition.longitude),
         destination: LatLng(widget.farmerRequest.location!.latitude, widget.farmerRequest.location!.longitude),

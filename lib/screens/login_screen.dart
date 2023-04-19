@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../widgets/custom_widgets.dart';
 import 'package:kheti_go_fleet/screens/otp_screen.dart';
 
+import '../widgets/small_widgets.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -26,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
     displayNameNoCountryCode: "IN",
     e164Key: "",
   );
-
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,91 +59,123 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(
                     height: 30,
                   ),
-                  TextFormField(
-                    cursorColor: Colors.purple,
-                    controller: phoneController,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    keyboardType: TextInputType.phone,
-                    onChanged: (value) {
-                      setState(() {});
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Enter phone number",
-                      hintStyle: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 15,
-                        color: Colors.grey.shade600,
+                  Form(
+                    key: _formKey,
+                    child: TextFormField(
+                      maxLength: 10,
+                      cursorColor: Colors.purple,
+                      controller: phoneController,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.black12),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.black12),
-                      ),
-                      prefixIcon: Container(
-                        padding: const EdgeInsets.all(12.0),
-                        child: InkWell(
-                          onTap: () {
-                            showCountryPicker(
-                                context: context,
-                                countryListTheme: const CountryListThemeData(
-                                  bottomSheetHeight: 550,
-                                ),
-                                onSelect: (value) {
-                                  setState(() {
-                                    selectedCountry = value;
+                      keyboardType: TextInputType.phone,
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      decoration: InputDecoration(
+                        hintText: "Enter phone number",
+                        hintStyle: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                          color: Colors.grey.shade600,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.black12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.black12),
+                        ),
+                        prefixIcon: Container(
+                          padding: const EdgeInsets.all(12.0),
+                          child: InkWell(
+                            onTap: () {
+                              showCountryPicker(
+                                  context: context,
+                                  countryListTheme: const CountryListThemeData(
+                                    bottomSheetHeight: 550,
+                                  ),
+                                  onSelect: (value) {
+                                    setState(() {
+                                      selectedCountry = value;
+                                    });
                                   });
-                                });
-                          },
-                          child: Text(
-                            "${selectedCountry.flagEmoji} + ${selectedCountry.phoneCode}",
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
+                            },
+                            child: Text(
+                              "${selectedCountry.flagEmoji} + ${selectedCountry.phoneCode}",
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
+                        suffixIcon: phoneController.text.length == 10
+                            ? Container(
+                                height: 30,
+                                width: 30,
+                                margin: const EdgeInsets.all(10.0),
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.green,
+                                ),
+                                child: const Icon(
+                                  Icons.done,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              )
+                            : null,
                       ),
-                      suffixIcon: phoneController.text.length == 10
-                          ? Container(
-                              height: 30,
-                              width: 30,
-                              margin: const EdgeInsets.all(10.0),
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.green,
-                              ),
-                              child: const Icon(
-                                Icons.done,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            )
-                          : null,
+                      validator: (value) {
+                        if (value?.length!=10) {
+                          return 'Enter valid number!';
+                        }
+                        return null;
+                      },
+
                     ),
                   ),
                   const SizedBox(height: 20),
                   CustomButton(
                     text: "Login",
                     onPressed: () async {
-                      if (phoneController.text.length == 10) {
+                      if (_formKey.currentState!.validate()){
+                        ShowLoading(context);
                         await FirebaseAuth.instance.verifyPhoneNumber(
                             phoneNumber:
                                 '+${selectedCountry.phoneCode}${phoneController.text.trim()}',
                             verificationCompleted:
                                 (PhoneAuthCredential credential) {},
-                            verificationFailed: (FirebaseAuthException e) {print('verification fail due to $e' );},
+                            verificationFailed: (FirebaseAuthException e) {
+                              print('verification fail due to $e' );
+                              Navigator.pop(context);
+                              const snackdemo = SnackBar(
+                                content: Text('Request Failed'),
+                                backgroundColor: Colors.red,
+                                elevation: 10,
+                                behavior: SnackBarBehavior.floating,
+                                margin: EdgeInsets.all(5),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(snackdemo);
+                              },
                             codeSent:
                                 (String verificationId, int? resendToken) {
+                                  const snackdemo = SnackBar(
+                                    content: Text('Otp send Successfully'),
+                                    backgroundColor: Colors.green,
+                                    elevation: 10,
+                                    behavior: SnackBarBehavior.floating,
+                                    margin: EdgeInsets.all(5),
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(snackdemo);
                               print(verificationId);
                               _verificationId = verificationId;
                               setState(() {
+                                Navigator.of(context).pop();
                                 gotoNextScreen(
                                   OtpScreen(
                                     verificationId: _verificationId,

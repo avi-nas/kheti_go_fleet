@@ -2,11 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:kheti_go_fleet/screens/login_screen.dart';
 
+import 'package:kheti_go_fleet/widgets/drawer_home_screen.dart';
 import '../models/farmer.dart';
 import '../models/farmer_request.dart';
-import '../provider/auth_provider.dart';
 import '../widgets/show_request_info.dart';
 
 
@@ -34,23 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('KhetiGo - Fleet Management'),
       ),
-      drawer: Drawer(
-        child: Center(
-          child: ElevatedButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                await AppAuthProvider.setCurrentUser('');
-                if (context.mounted) {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ));
-                }
-              },
-              child: const Text('logout')),
-        ),
-      ),
+      drawer: CustomDrawer(),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -184,13 +167,19 @@ class _HomeScreenState extends State<HomeScreen> {
     await Geolocator.requestPermission().then((value){}).onError((error, stackTrace){
       print(error);
     });
-    userPosition = await Geolocator.getCurrentPosition();
+    // userPosition = await Geolocator.getCurrentPosition(
+    //   desiredAccuracy: LocationAccuracy.bestForNavigation,
+    // );
+    try {
+      userPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
+    } catch(e) {
+      userPosition = await Geolocator.getLastKnownPosition();
+    }
     print(userPosition!.latitude);
     storeLocationInFirebase();
     setState(() {
     });
   }
-
   storeLocationInFirebase()async{
     GeoPoint geoPoint =  GeoPoint(userPosition!.latitude, userPosition!.longitude);
     final Map<String, dynamic> data = {
