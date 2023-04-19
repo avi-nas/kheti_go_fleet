@@ -173,6 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       userPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
     } catch(e) {
+
       userPosition = await Geolocator.getLastKnownPosition();
     }
     print(userPosition!.latitude);
