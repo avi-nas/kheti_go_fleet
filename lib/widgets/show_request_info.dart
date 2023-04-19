@@ -88,7 +88,6 @@ class _RequestInfoState extends State<RequestInfo> {
   calculateDistance(){
     double totalDistance = 0.0;
     for(int i=1;i<routeCoords!.length-1;i++) {
-      //print('${routeCoords![i]}  ${routeCoords![i+1]}');
       totalDistance = Geolocator.distanceBetween(
           routeCoords![i - 1].latitude,
           routeCoords![i - 1].longitude,
