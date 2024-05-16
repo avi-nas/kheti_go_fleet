@@ -51,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   .collection("FleetAllocationRequest")
                   .doc(FirebaseAuth.instance.currentUser!.uid)
                   .collection("userRequest")
+              .orderBy("timestamp",descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -258,15 +259,34 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           IconButton(
             color: Colors.red,
-            onPressed: () {},
+            onPressed: () async{
+              await FirebaseFirestore.instance
+                  .collection('FleetAllocationRequest')
+                  .doc(farmerRequest.fleetId)
+                  .collection('userRequest')
+                  .doc('${farmerRequest.requestId}')
+                  .update({"requestRejected": true});
+
+              await FirebaseFirestore.instance
+                  .collection('Farmers')
+                  .doc(farmerRequest.userId)
+                  .collection('MyBookings')
+                  .doc('${farmerRequest.requestId}')
+                  .update({"requestRejected": true});
+            },
             icon: const Icon(Icons.close_rounded),
           ),
         ],
       );
-    } else {
+    } else if(farmerRequest.requestAccepted!) {
       return const Padding(
         padding: EdgeInsets.all(8.0),
         child: Text("Accepted"),
+      );
+    }else{
+      return const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text("Rejected"),
       );
     }
   }

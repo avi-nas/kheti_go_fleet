@@ -9,13 +9,18 @@ class FarmerRequest {
   bool? requestRejected;
   int? timestamp;
   String? userId;
-
   Map? service;
 
-  FarmerRequest({this.userId,this.service, this.location, this.requestAccepted,this.timestamp,this.fleetId,this.requestId,this.requestRejected});
+  int? amount;
+  int? startTime;
+  int? endTime;
+  bool? paymentDone;
+  bool? isStarted;
+  bool? isEnded;
+  int? otp;
 
-
-
+  FarmerRequest(
+      {this.userId, this.service, this.location, this.requestAccepted, this.timestamp, this.fleetId, this.requestId, this.requestRejected});
 
   FarmerRequest.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
@@ -26,6 +31,13 @@ class FarmerRequest {
     fleetId = json['fleetId'];
     requestRejected = json['requestRejected'];
     requestId = json['requestId'];
+    amount = json['amount'];
+    startTime = json['startTime'];
+    endTime = json['endTime'];
+    paymentDone = json['paymentDone'];
+    isStarted = json['isStarted'];
+    isEnded = json['isEnded'];
+    otp = json['otp'];
   }
 
   Map<String, dynamic> toJson() {

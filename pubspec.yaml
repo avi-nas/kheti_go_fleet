@@ -50,6 +50,7 @@ dependencies:
   google_map_polyline_new: ^0.3.0+2
   url_launcher: ^6.1.13
   cached_network_image: ^3.3.1
+  fluttertoast: ^8.2.5
 
 dev_dependencies:
   flutter_test:
